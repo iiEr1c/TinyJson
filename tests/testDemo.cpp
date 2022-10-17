@@ -132,10 +132,10 @@ TEST_CASE("Test string", "[parse]") {
 
   REQUIRE(val.root->type == TinyJson::JSON_STRING);
   val.~JsonValue();
-  val.root = (TinyJson::Node *)::malloc(sizeof(TinyJson::Node));
-  json = "\"\u4f60\u597dabcdefghijk\""sv; // unicode为你好
-  REQUIRE(json.parse(&val) == TinyJson::ParseResult::OK);
-  REQUIRE(val.root->getStr() == "你好abcdefghijk"sv);
+  // val.root = (TinyJson::Node *)::malloc(sizeof(TinyJson::Node));
+  // json = "\"\u4f60\u597dabcdefghijk\""sv; // unicode为你好
+  // REQUIRE(json.parse(&val) == TinyJson::ParseResult::OK);
+  // REQUIRE(val.root->getStr() == "你好abcdefghijk"sv);
 }
 
 TEST_CASE("Test array", "[parse]") {

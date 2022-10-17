@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <variant>
 
 class TinyJson {
@@ -35,8 +36,10 @@ public:
     JSON_ARRAY,
     JSON_OBJECT
   };
-  struct KVnode;
+
   struct JsonValue;
+private:
+  struct KVnode;
   /* 这里没有选择使用Node直接析构, 而是包装在JsonValue中让JsonValue进行析构,
    * 仅仅是为了避免递归析构, 不知道是否有其他方案... */
   struct Node {
@@ -174,6 +177,8 @@ public:
     Node *v;
     KVnode() : str{nullptr}, strLen{0}, v{} {}
   };
+
+public:
   struct JsonValue {
     Node *root;
     // 是否应该此时分配内存?
@@ -257,6 +262,19 @@ private:
       if (ptr != nullptr) {
         free(ptr);
       }
+    }
+
+    InternalStack(const InternalStack &) = delete;
+    InternalStack &operator=(const InternalStack &) = delete;
+    InternalStack(InternalStack &&stack)
+        : ptr{std::exchange(stack.ptr, nullptr)},
+          size{std::exchange(stack.size, 0)}, top{std::exchange(stack.top, 0)} {
+    }
+    InternalStack &operator=(InternalStack &&stack) {
+      ptr = std::exchange(stack.ptr, nullptr);
+      size = std::exchange(stack.size, 0);
+      top = std::exchange(stack.top, 0);
+      return *this;
     }
   };
   std::unique_ptr<InternalStack> inStack;
